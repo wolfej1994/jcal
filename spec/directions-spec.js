@@ -6,7 +6,7 @@ const destination = 'Nottingham'
 
 describe('Get Directions', function() {
 
-	xit('should give us the route distance from our origin to our destination', () => {
+	it('should give us the route distance from our origin to our destination', () => {
 		directions.distance(origin, destination, (err, distance) => {
 			try {
 				if (err)
@@ -18,7 +18,7 @@ describe('Get Directions', function() {
 		})
 	})
 
-	xit('should give us the duration that our route will take ', () => {
+	it('should give us the duration that our route will take ', () => {
 		directions.duration(origin, destination, (err, duration) => {
 			try {
 				if (err)
@@ -30,7 +30,7 @@ describe('Get Directions', function() {
 		})
 	})
 
-	xit('should give us directions from the origin to the destination', () => {
+	it('should give us directions from the origin to the destination', () => {
 		directions.route(origin, destination, (err, route) => {
 			try {
 				if (err)

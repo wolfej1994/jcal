@@ -27,7 +27,7 @@ exports.getFor = (town, date, callback) => {
 	apiCall(town, date, (err, allEvents) => {
 		if (err) return eventList//callback(err)
 		allEvents.events.forEach(function(events){
-			const event = {name: events.name.text, description: events.description.text, dateTime: events.start.local, url: events.url};
+			const event = {name: events.name.text, description: events.description.text, dateTime: events.start.local, url: events.url}
 			eventList.push(event)
 		})
 		return callback(null, eventList)
@@ -44,7 +44,6 @@ exports.getFor = (town, date, callback) => {
 function apiCall(town, date, callback) {
 	const firstIndex = 0
 	const url = 'https://www.eventbriteapi.com/v3/events/search/?location.address=${town}&start_date.range_start=${date}&start_date.keyword=today&token=C5P7GDUFXHJ2ZNMFFEDV'
-	console.log(url)
 	request.get(url, (err, res, body) => {
 		if (err) return callback(new Error('Event Brite API Error'))
 		const json = JSON.parse(body)
