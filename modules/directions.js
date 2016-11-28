@@ -37,9 +37,9 @@ exports.duration = (start, end, callback) => {
 }
 
 exports.route = (start, end, callback) => {
-	const directions = [];
+	const directions = []
 	apiCall(start, end, (err, route) => {
-		if (err) return route//callback(err)
+		if (err) return route
 		route.steps.forEach(function(steps){
 			directions.push(steps.html_instructions)
 		})
