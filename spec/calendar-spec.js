@@ -4,13 +4,13 @@ const calendar = require('../calendar')
 
 describe('Calendar Appointments', function() {
 
-	xbeforeEach(() => {
+	beforeEach(() => {
 		calendar.add('Easter Sunday', new Date(2017, 4, 16, 12, 0, 0), 'Coventry University, Priory Street', 'Coventry', 'CV1 5FB')
 		calendar.add('Bonfire Night', new Date(2017, 11, 5, 18, 0, 0), 'Main Street, Hunningham', 'Leamington Spa', 'CV33 9DY')
 		calendar.add('Christmas Day', new Date(2017, 12, 25, 11, 0, 0), 'West Thorpe, Willoughby', 'Loughborough', 'LE12 6TD')
 	})
 
-	xafterEach(() => {
+	afterEach(() => {
 		calendar.clear()
 	})
 

@@ -6,31 +6,31 @@ const destination = 'Nottingham'
 
 describe('Get Directions', function() {
 
-	xit('should give us the route distance from our origin to our destination', () => {
+	it('should give us the route distance from our start point till our end point', () => {
 		directions.distance(origin, destination, (err, distance) => {
 			try {
 				if (err)
 					throw err
-				expect(distance).toBe('89.0 km')
+				expect(distance).toBe('Nottingham is 89.0 km from Coventry')
 			} catch(err) {
 				console.log(err.message)
 			}
 		})
 	})
 
-	xit('should give us the duration that our route will take ', () => {
+	it('should give us the duration that our route will take from start till end', () => {
 		directions.duration(origin, destination, (err, duration) => {
 			try {
 				if (err)
 					throw err
-				expect(duration).toBe('1 hour 5 mins')
+				expect(duration).toBe('Travelling from Coventry to Nottingham will take 1 hour 5 mins')
 			} catch(err) {
 				console.log(err.message)
 			}
 		})
 	})
 
-	xit('should give us directions from the origin to the destination', () => {
+	it('should give us a list of 29 directions from our start till our end point', () => {
 		directions.route(origin, destination, (err, route) => {
 			try {
 				if (err)

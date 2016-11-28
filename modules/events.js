@@ -26,11 +26,11 @@ exports.getFor = (town, date, callback) => {
 	const eventList = []
 	apiCall(town, date, (err, allEvents) => {
 		if (err) return eventList//callback(err)
-		allEvents.events.forEach(function(events){
-			const event = {name: events.name.text, description: events.description.text, dateTime: events.start.local, url: events.url};
-			eventList.push(event)
-		})
-		return callback(null, eventList)
+			allEvents.forEach(function(event){
+				const eventItem = {name: event.name.text, description: event.description.text, dateTime: event.start.local, url: event.url}
+				eventList.push(eventItem)
+			})
+		callback(eventList)
 	})
 }
 
@@ -42,14 +42,15 @@ exports.getFor = (town, date, callback) => {
  * @returns {null} no return value
  */
 function apiCall(town, date, callback) {
-	const firstIndex = 0
-	const url = 'https://www.eventbriteapi.com/v3/events/search/?location.address=${town}&start_date.range_start=${date}&start_date.keyword=today&token=C5P7GDUFXHJ2ZNMFFEDV'
+	const startDate = `${date.getUTCFullYear()}-${date.getUTCMonth()+1}-${date.getUTCDate()}T${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`
+	const endDate = `${date.getUTCFullYear()}-${date.getUTCMonth()+1}-${date.getUTCDate()+1}T${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`
+	const url = `https://www.eventbriteapi.com/v3/events/search/?location.address=${town}&start_date.range_start=${startDate}&start_date.range_end=${endDate}&token=C5P7GDUFXHJ2ZNMFFEDV`
 	console.log(url)
 	request.get(url, (err, res, body) => {
-		if (err) return callback(new Error('Event Brite API Error'))
+		if (err) return callback(new Error('EventBrite API Error'))
 		const json = JSON.parse(body)
-		if (json.status !== 'OK') return callback(new Error('invalid location/time'))
-		const eventList = json.events[firstIndex]
+		if(json.error_code) return callback(new Error('Invalid Location or Date/Time'))
+		const eventList = json.events
 		return callback(null, eventList)
 	})
 }
