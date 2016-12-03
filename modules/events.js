@@ -13,7 +13,7 @@
  * @param {data} events - the data returned as an object
  */
 
-const request = require('request')
+const sync = require('sync-request')
 
 /**
  * returns all events on given day for given location
@@ -25,12 +25,13 @@ const request = require('request')
 exports.getFor = (town, date, callback) => {
 	const eventList = []
 	apiCall(town, date, (err, allEvents) => {
-		if (err) return eventList//callback(err)
-			allEvents.forEach(function(event){
-				const eventItem = {name: event.name.text, description: event.description.text, dateTime: event.start.local, url: event.url}
-				eventList.push(eventItem)
-			})
-		callback(eventList)
+		if (err) return callback(err, null)
+		else
+		allEvents.forEach(function(event){
+			const eventItem = {name: event.name.text, description: event.description.text, dateTime: event.start.local, url: event.url}
+			eventList.push(eventItem)
+		})
+		return callback(null, eventList)
 	})
 }
 
@@ -42,15 +43,13 @@ exports.getFor = (town, date, callback) => {
  * @returns {null} no return value
  */
 function apiCall(town, date, callback) {
-	const startDate = `${date.getUTCFullYear()}-${date.getUTCMonth()+1}-${date.getUTCDate()}T${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`
-	const endDate = `${date.getUTCFullYear()}-${date.getUTCMonth()+1}-${date.getUTCDate()+1}T${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`
-	const url = `https://www.eventbriteapi.com/v3/events/search/?location.address=${town}&start_date.range_start=${startDate}&start_date.range_end=${endDate}&token=C5P7GDUFXHJ2ZNMFFEDV`
-	console.log(url)
-	request.get(url, (err, res, body) => {
-		if (err) return callback(new Error('EventBrite API Error'))
-		const json = JSON.parse(body)
-		if(json.error_code) return callback(new Error('Invalid Location or Date/Time'))
-		const eventList = json.events
+		const startDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}T00:00:00`
+		const endDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()+1}T00:00:00`
+		let url = 'https://www.eventbriteapi.com/v3/events/search/?location.address='
+		url = url+town+'&start_date.range_start='+startDate+'&start_date.range_end='+endDate+'&token=C5P7GDUFXHJ2ZNMFFEDV'
+		const res = sync('GET', url)
+		const data = JSON.parse(res.getBody().toString('utf8'))
+		const eventList = data.events
+		//if(data.error_code) return callback(new Error('Invalid Location or Date/Time'), null)
 		return callback(null, eventList)
-	})
-}
+	}
