@@ -26,6 +26,7 @@
     "istanbul": "^0.4.5",
     "jasmine-node": "^1.14.5",
     "jsdoc": "^3.4.0",
+    "mongoose": "^4.7.1",
     "node-inspector": "^0.12.8"
   }
 }

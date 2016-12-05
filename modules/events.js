@@ -19,21 +19,19 @@ const sync = require('sync-request')
  * returns all events on given day for given location
  * @param {string} town - the location where the events are
  * @param {string} date - the date that the events are held on
- * @param {apiCallback} callback - the callback run when api call is completed
  * @returns {null} no return value
  */
-exports.getFor = (town, date, callback) => {
+exports.getFor = (town, date) => new Promise((resolve, reject) => {
 	const eventList = []
-	apiCall(town, date, (err, allEvents) => {
-		if (err) return callback(err, null)
-		else
+	apiCall(town, date, function(err, allEvents){
+		if (err) reject(err)
 		allEvents.forEach(function(event){
 			const eventItem = {name: event.name.text, description: event.description.text, dateTime: event.start.local, url: event.url}
 			eventList.push(eventItem)
 		})
-		return callback(null, eventList)
+		return resolve(eventList)
 	})
-}
+})
 
 /**
  * @function apiCall
@@ -50,6 +48,6 @@ function apiCall(town, date, callback) {
 		const res = sync('GET', url)
 		const data = JSON.parse(res.getBody().toString('utf8'))
 		const eventList = data.events
-		//if(data.error_code) return callback(new Error('Invalid Location or Date/Time'), null)
+		if(data.error_code) return callback('EventBrite Error: '+data.error_code, null)
 		return callback(null, eventList)
 	}

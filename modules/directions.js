@@ -18,23 +18,28 @@ const sync = require('sync-request')
  * returns the driving distance between two locations
  * @param {string} start - the starting location for the journey
  * @param {string} end - the ending location for the journey
- * @param {apiCallback} callback - the callback run when api call is completed
  * @returns {null} no return value
  */
-exports.distance = (start, end, callback) => {
-		const data = apiCall(start, end)
-		return callback(null, data.routes[0].legs[0].distance.value)
-}
+exports.distance = (start, end) => new Promise((resolve, reject) => {
+		const data = apiCall(start, end, function(err, data){
+			if(err) reject(err)
+			resolve(data.routes[0].legs[0].distance.value)
+		})
+})
 
-exports.duration = (start, end, callback) => {
-		const data = apiCall(start, end)
-		return callback(null, data.routes[0].legs[0].duration.value)
-}
+exports.duration = (start, end) => new Promise((resolve, reject) => {
+		const data = apiCall(start, end, function(err, data){
+			if(err) reject(err)
+			resolve(data.routes[0].legs[0].duration.value)
+		})
+})
 
-exports.route = (start, end, callback) => {
-		const data = apiCall(start, end)
-		return callback(null, data.routes[0].legs[0].steps)
-}
+exports.route = (start, end) => new Promise((resolve, reject) => {
+		const data = apiCall(start, end, function(err, data){
+			if(err) reject(err)
+			resolve(data.routes[0].legs[0].steps)
+		})
+})
 
 /**
  * @function apiCall
@@ -42,9 +47,12 @@ exports.route = (start, end, callback) => {
  * @param {string} end - the ending location for the journey
  * @returns {null} no return value
  */
-function apiCall(start, end) {
+function apiCall(start, end, callback) {
 		let url = 'https://maps.googleapis.com/maps/api/directions/json?origin='
 		url = url+start+'&destination='+end
 		const res = sync('GET', url)
-		return JSON.parse(res.getBody().toString('utf8'))
+		const json = JSON.parse(res.getBody().toString('utf8'))
+		console.log(json)
+		if(json.status === 'NOT_FOUND') return callback('Google Maps Error: '+json.status)
+		return callback(null, json)
 }
