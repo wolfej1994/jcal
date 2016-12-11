@@ -1,186 +1,260 @@
 'use strict'
 
+/**
+ * calendar module.
+ * @module calendar
+ */
+
 const directions = require('./modules/directions')
 const events = require('./modules/events')
-const rand = require('csprng')
-const Appointment = require('./modules/database')
+const mongo = require('./modules/data')
+const auth = require('./modules/auth')
+
 
 /**
- * Validates the appointment we're posting to the API.
- * @param {data} json The appointment to be validated.
- * @returns {boolean} Whether or not json is valid.
+ * @function createAppointment
+ * @description Creates a new appointment and stores it in the databse.
+ * @param {object} request - The data passed to the function that is used to define an appointment.
+ * @return {object} - Response data detailing whether the addition was successful or not.
  */
-function validateJson(json) {
-	if (typeof json.name !== 'string') {
-		console.log('name not a string')
-		return false
-	}
-	if (!(json.date instanceof Date)) {
-		console.log('date is not a date')
-		return false
-	}
-  	if (typeof json.address !== 'string') {
-      	console.log('address is not a string')
-      	return false
-  	}
-  	if (typeof json.towncity !== 'string') {
-    	console.log('townCity is not a string')
-     	return false
-	}
-	if (typeof json.postcode !== 'string') {
-		console.log('postcode is not a string')
-		return false
-	}
-	return true
-}
-
-exports.count = () => new Promise((resolve, reject) =>{
-	/*if (auth.basic === undefined) {
-		console.log('missing basic auth')
-		return {code: 401, contentType: 'application/json', response: { status: 'error', message: 'missing basic auth' }}
-	}
-	if (auth.basic.username !== 'testuser' || auth.basic.password !== 'p455w0rd') {
-		console.log('invalid credentials')
-    	return {code: 401, contentType: 'application/json', response: { status: 'error', message: 'invalid credentials' }}
-	}*/
-	Appointment.count(function(err, count) {
-  		if (err) reject(err)
-  		return resolve(count)
+exports.createAppointment = (request) => new Promise((resolve, reject) => {
+	validateAuth(request)
+	.then(() => {
+		console.log('creating appointment...')
+		return mongo.addAppointment(request.body, request.authorization.basic.username)
+	})
+	.then(result => {
+		resolve(result)
+	})
+	.catch(err => {
+		console.log(err)
+		reject(err)
 	})
 })
 
-exports.clear = () => new Promise((resolve, reject) =>{
-	/*if (auth.basic === undefined) {
-		console.log('missing basic auth')
-		return {code: 401, contentType: 'application/json', response: { status: 'error', message: 'missing basic auth' }}
-	}
-	if (auth.basic.username !== 'testuser' || auth.basic.password !== 'p455w0rd') {
-		console.log('invalid credentials')
-    	return {code: 401, contentType: 'application/json', response: { status: 'error', message: 'invalid credentials' }}
-	}*/
-	Appointment.remove(function(err) {
-  		if (err) reject(err)
-  		resolve('All Appointments Removed')
+/**
+ * 
+ */
+exports.clearAllAppointments = (request) => new Promise((resolve, reject) => {
+	validateAuth(request)
+	.then(() => {
+		console.log('deleting all appointments...')
+		return mongo.appointmentsClear(request.authorization.basic.username)
+	})
+	.then(result => {
+		resolve(result)
+	})
+	.catch(err => {
+		console.log(err)
+		reject(err)
 	})
 })
 
-exports.add = (body) => new Promise((resolve, reject) => {
-	/*if (auth.basic === undefined) {
-		console.log('missing basic auth')
-		return {code: 401, contentType: 'application/json', response: { status: 'error', message: 'missing basic auth' }}
-	}
-	if (auth.basic.username !== 'testuser' || auth.basic.password !== 'p455w0rd') {
-		console.log('invalid credentials')
-    	return {code: 401, contentType: 'application/json', response: { status: 'error', message: 'invalid credentials' }}
-	}*/
-  	const valid = validateJson(body)
-  	if (valid === false) {
-    	reject({code: 400 ,contentType: 'application/json', response: { status: 'error', message: 'JSON data missing in request body' }})
-  	}
-  	const newId = rand(160, 36)
-	const newAppointment = new Appointment({
-		id: newId,
-		name: body.name,
-		date: body.date,
-		address: body.address,
-		towncity: body.towncity,
-		postcode: body.postcode
+/**
+ * 
+ */
+exports.getAllAppointments = (request) => new Promise((resolve, reject) => {
+	validateAuth(request)
+	.then(() => {
+		console.log('getting all appointments...')
+		return mongo.getAllAppointments(request.authorization.basic.username)
 	})
-	newAppointment.save(function(err, newAppointment) {
-  		if (err) reject(err)
-		resolve(newAppointment)
+	.then(result => {
+		resolve(result)
+	})
+	.catch(err => {
+		console.log(err)
+		reject(err)
+	})
+})
+
+/**
+ * 
+ */
+exports.getAppointment = (request) => new Promise((resolve, reject) => {
+	validateAuth(request)
+	.then(() => {
+		console.log('getting appointment...')
+		return mongo.getAppointmentById(request.body.id, request.authorization.basic.username)
+	})
+	.then(result => {
+		resolve(result)
+	})
+	.catch(err => {
+		console.log(err)
+		reject(err)
 	})
 })
 
 
-exports.getAll = () => new Promise((resolve, reject) =>{
-	/*if (auth.basic === undefined) {
-		console.log('missing basic auth')
-		return {code: 401, contentType: 'application/json', response: { status: 'error', message: 'missing basic auth' }}
-	}
-	if (auth.basic.username !== 'testuser' || auth.basic.password !== 'p455w0rd') {
-		console.log('invalid credentials')
-    	return {code: 401, contentType: 'application/json', response: { status: 'error', message: 'invalid credentials' }}
-	}*/
-	Appointment.find(function(err, appointments) {
-  		if (err) reject(err)
-  		resolve(appointments)
+/**
+ * 
+ */
+exports.getAppointmentByDate = (request) => new Promise((resolve, reject) => {
+	validateAuth(request)
+	.then(() => {
+		console.log('getting appointments...')
+		return mongo.getAppointmentsByDate(request.body.date, request.authorization.basic.username)
+	})
+	.then(result => {
+		resolve(result)
+	})
+	.catch(err => {
+		console.log(err)
+		reject(err)
 	})
 })
 
-exports.remove = (findId) => new Promise((resolve, reject) => {
-	/*if (auth.basic === undefined) {
-		console.log('missing basic auth')
-		return {code: 401, contentType: 'application/json', response: { status: 'error', message: 'missing basic auth' }}
-	}
-	if (auth.basic.username !== 'testuser' || auth.basic.password !== 'p455w0rd') {
-		console.log('invalid credentials')
-    	return {code: 401, contentType: 'application/json', response: { status: 'error', message: 'invalid credentials' }}
-	}*/
-	Appointment.findOneAndRemove({id: findId}, function(err, foundApp){
-		if (err) reject(err)
-		if(!foundApp) reject({code: 204, contentType: 'application/json', response: { status: 'error', message: 'no appointment found' }})
-		resolve({code: 200, contentType: 'json', response: { status: 'ok', message: 'appointment has been deleted'}})
+/**
+ * 
+ */
+exports.updateAppointment = (request) => new Promise((resolve, reject) => {
+	validateAuth(request)
+	.then(() => {
+		console.log('updating appointment...')
+		return mongo.updateAppointment(request.body.id, request.body, request.authorization.basic.username)
+	})
+	.then(result => {
+		resolve(result)
+	})
+	.catch(err => {
+		console.log(err)
+		reject(err)
 	})
 })
 
-exports.update = (findId, body) => new Promise((resolve, reject) => {
-	/*if (auth.basic === undefined) {
-		console.log('missing basic auth')
-		return {code: 401, contentType: 'application/json', response: { status: 'error', message: 'missing basic auth' }}
-	}
-	if (auth.basic.username !== 'testuser' || auth.basic.password !== 'p455w0rd') {
-		console.log('invalid credentials')
-    	return {code: 401, contentType: 'application/json', response: { status: 'error', message: 'invalid credentials' }}
-	}*/
-  	const valid = validateJson(body)
-  	if (valid === false) {
-    	reject({code: 400 ,contentType: 'application/json', response: { status: 'error', message: 'JSON data missing in request body' }})
-  	}
-	Appointment.findOneAndUpdate({id: findId}, { $set: {id: findId, name: body.name, date: body.date, address: body.address, towncity: body.towncity, postcode: body.postcode}}, { new: true }, function(err, updatedApp) {
-  		if (err) reject(err)
-		if(!updatedApp) reject({code: 204, contentType: 'application/json', response: { status: 'error', message: 'no appointment found' }})
-  		resolve({code: 200, contentType: 'json', response: {status: 'ok', message: `${findId} has been updated`}})
+/**
+ * 
+ */
+exports.deleteAppointment = (request) => new Promise((resolve, reject) => {
+	validateAuth(request)
+	.then(() => {
+		console.log('deleting appointment...')
+		return mongo.removeAppointment(request.body.id, request.authorization.basic.username)
+	})
+	.then(result => {
+		resolve(result)
+	})
+	.catch(err => {
+		console.log(err)
+		reject(err)
 	})
 })
 
-exports.getDate = (findDate) => new Promise((resolve, reject) => {
-	if(!(findDate instanceof Date)){
-		reject({code: 400, contentType: 'json', response: {status: 'ok', message: 'date is the incorrect format'}})
-	}
-	const appointments = []
-	Appointment.find({date: {'$gte': new Date(findDate.getFullYear(), findDate.getMonth(), findDate.getDate(), 0, 0, 0), '$lt': new Date(findDate.getFullYear(), findDate.getMonth(), findDate.getDate(), 23, 59, 59)}}, function(err, foundAppointments){
-		if(err) reject(err)
-		if(foundAppointments.length == 0) reject({code: 204, contentType: 'application/json', response: { status: 'error', message: 'no appointments on given date/time' }})
-		resolve(foundAppointments)
+
+/**
+ * @function getEvents
+ * @description Gets a collection of event objects based on information stored in appointment.
+ * @param {string} findId - The ID used to identify appointments in the collection.
+ * @returns {Array<object>} - Event objects found on given date in given town.
+ */
+exports.getEvents = (request) => new Promise((resolve,reject) => {
+	validateAuth(request)
+	.then(() => {
+		console.log('getting all events')
+		return mongo.getAppointmentById(request.body.id, request.authorization.basic.username)
+	})
+	.then(appointment => {
+		console.log(appointment.towncity + appointment.date)
+		return events.getFor(appointment.towncity, appointment.date)
+	})
+	.then(eventList => {
+		resolve(eventList)
+	})
+	.catch(err => {
+		console.log(err)
+		reject(err)
 	})
 })
 
-exports.getEvents = (findId) => new Promise((resolve,reject) => {
-	Appointment.findOne({id: findId}, function(err, foundApp){
-		if (err) reject(err)
-		if(!foundApp) reject({code: 204, contentType: 'application/json', response: { status: 'error', message: 'no appointment found' }})
-		events.getFor(foundApp.towncity, foundApp.date)
-		.then(eventList => {
-			resolve(eventList)
-		})
-		.catch(err => {
-			reject(err)
-		})
+/**
+ * @function getDirections
+ * @description Gets an array of direction objects from given location to appointment location.
+ * @param {object} currentLocation - Information containing the origin position for directions.
+ * @param {string} findId - The ID used to identify appointments in the collection.
+ * @returns {Array<object>} - Directions from current location to appointment.
+ */
+exports.getDirections = (request) => new Promise((resolve, reject) => {
+	mongo.getAppointmentById(request.body.id, request.authorization.basic.username)
+	.then(appointment => {
+		const destination = `${appointment.address}, ${appointment.towncity}, ${appointment.postcode}`
+		return directions.route(request.body.currentLocation, destination)
+	})
+	.then(route => {
+		resolve(route)
+	})
+	.catch(err => {
+		reject(err)
 	})
 })
 
-exports.getDirections = (currentLocation, findId) => new Promise((resolve, reject) => {
-	Appointment.findOne({id: findId}, function(err, foundApp){
-		if (err) reject(err)
-		if(!foundApp) reject({code: 204, contentType: 'application/json', response: { status: 'error', message: 'no appointment found' }})
-		const destination = `${foundApp.address}, ${foundApp.towncity}, ${foundApp.postcode}`
-		directions.route(currentLocation, destination)
-		.then(route => {
-			resolve(route)
-		})
-		.catch(err => {
-			reject(err)
-		})
+/**
+ * @function getDistance
+ * @description Gets the distance of hourney from given location to appointment location.
+ * @param {object} currentLocation - Information containing the origin position for distance.
+ * @param {string} findId - The ID used to identify appointments in the collection.
+ * @returns {number} - Distance from current location to appointment.
+ */
+exports.getDistance = (request) => new Promise((resolve, reject) => {
+	mongo.getAppointmentById(request.body.id, request.authorization.basic.username)
+	.then(appointment => {
+		const destination = `${appointment.address}, ${appointment.towncity}, ${appointment.postcode}`
+		return directions.distance(request.body.currentLocation, destination)
+	})
+	.then(distance => {
+		resolve(distance)
+	})
+	.catch(err => {
+		reject(err)
+	})
+})
+
+/**
+ * @function getDuration
+ * @description Gets the duration of journey from given location to appointment location.
+ * @param {object} currentLocation - Information containing the origin position for distance.
+ * @param {string} findId - The ID used to identify appointments in the collection.
+ * @returns {number} - Duration of journey from current location to appointment.
+ */
+exports.getDuration = (request) => new Promise((resolve, reject) => {
+	mongo.getAppointmentById(request.body.id, request.authorization.basic.username)
+	.then(appointment => {
+		const destination = `${appointment.address}, ${appointment.towncity}, ${appointment.postcode}`
+		return directions.duration(request.body.currentLocation, destination)
+	})
+	.then(duration => {
+		resolve(duration)
+	})
+	.catch(err => {
+		reject(err)
+	})
+})
+
+// ------------------ UTILITY FUNCTIONS ------------------
+
+/**
+ * 
+ */
+const validateAuth = (request) => new Promise((resolve, reject) => {
+	auth.getHeaderCreds(request)
+	.then(credentials => {
+		this.username = credentials.username
+		return auth.hashPass(credentials)
+	})
+	.then(credentials => {
+		this.password = credentials.password
+		return mongo.getUserInfo(credentials)
+	})
+	.then(account => {
+		const hash = account[0].password
+		return auth.checkPassword(hash, this.password)
+	})
+	.then(validated => {
+		console.log('validated'+validated)
+		resolve(validated)
+	})
+	.catch(err =>{
+		console.log(err)
+		reject(err)
 	})
 })

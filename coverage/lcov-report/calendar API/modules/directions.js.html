@@ -22,22 +22,22 @@
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>15/15</span>
+        <span class='fraction'>27/27</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>0/0</span>
+        <span class='fraction'>8/8</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>1/1</span>
+        <span class='fraction'>4/4</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>15/15</span>
+        <span class='fraction'>20/20</span>
       </div>
     </div>
   </div>
@@ -92,7 +92,14 @@
 47
 48
 49
-50</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+50
+51
+52
+53
+54
+55
+56
+57</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -114,33 +121,40 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">2×</span>
-<span class="cline-any cline-yes">2×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">4×</span>
 <span class="cline-any cline-yes">4×</span>
 <span class="cline-any cline-yes">4×</span>
 <span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">6×</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use strict'
 &nbsp;
 /**
@@ -161,23 +175,28 @@ const sync = require('sync-request')
  * returns the driving distance between two locations
  * @param {string} start - the starting location for the journey
  * @param {string} end - the ending location for the journey
- * @param {apiCallback} callback - the callback run when api call is completed
  * @returns {null} no return value
  */
-exports.distance = (start, end, callback) =&gt; {
-		const data = apiCall(start, end)
-		return callback(null, data.routes[0].legs[0].distance.value)
-}
+exports.distance = (start, end) =&gt; new Promise((resolve, reject) =&gt; {
+		const data = apiCall(start, end, function(err, data) {
+			if(err) reject(err)
+			resolve(data.routes[0].legs[0].distance.value)
+		})
+})
 &nbsp;
-exports.duration = (start, end, callback) =&gt; {
-		const data = apiCall(start, end)
-		return callback(null, data.routes[0].legs[0].duration.value)
-}
+exports.duration = (start, end) =&gt; new Promise((resolve, reject) =&gt; {
+		const data = apiCall(start, end, function(err, data) {
+			if(err) reject(err)
+			resolve(data.routes[0].legs[0].duration.value)
+		})
+})
 &nbsp;
-exports.route = (start, end, callback) =&gt; {
-		const data = apiCall(start, end)
-		return callback(null, data.routes[0].legs[0].steps)
-}
+exports.route = (start, end) =&gt; new Promise((resolve, reject) =&gt; {
+		const data = apiCall(start, end, function(err, data) {
+			if(err) reject(err)
+			resolve(data.routes[0].legs[0].steps)
+		})
+})
 &nbsp;
 /**
  * @function apiCall
@@ -185,18 +204,20 @@ exports.route = (start, end, callback) =&gt; {
  * @param {string} end - the ending location for the journey
  * @returns {null} no return value
  */
-function apiCall(start, end) {
+function apiCall(start, end, callback) {
 		let url = 'https://maps.googleapis.com/maps/api/directions/json?origin='
 		url = url+start+'&amp;destination='+end
 		const res = sync('GET', url)
-		return JSON.parse(res.getBody().toString('utf8'))
+		const json = JSON.parse(res.getBody().toString('utf8'))
+		if(json.status === 'NOT_FOUND') return callback('Google Maps Error: '+json.status)
+		return callback(null, json)
 }</pre></td></tr>
 </table></pre>
 <div class='push'></div><!-- for sticky footer -->
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Dec 03 2016 11:08:27 GMT+0000 (GMT)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Dec 06 2016 21:17:54 GMT+0000 (GMT)
 </div>
 </div>
 <script src="../../prettify.js"></script>
