@@ -17,10 +17,12 @@
   "author": "James Wolfe",
   "license": "ISC",
   "dependencies": {
+    "csprng": "^0.1.1",
     "istanbul": "^0.4.5",
     "nodemon": "^1.11.0",
     "readline-sync": "^1.2.22",
-    "request": "^2.78.0"
+    "request": "^2.78.0",
+    "restify": "^4.3.0"
   },
   "devDependencies": {
     "bcrypt": "^1.0.0",
