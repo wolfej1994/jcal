@@ -13,7 +13,7 @@ const sync = require('sync-request')
  * @description Returns all events on given day for given location
  * @param {string} town - the location where the events are
  * @param {string} date - the date that the events are held on
- * @returns {Array<object>} - Event objects found on given date for given town. 
+ * @returns {Array<object>} - Event objects found on given date for given town.
  */
 exports.getFor = (town, date) => new Promise((resolve, reject) => {
 	const eventList = []

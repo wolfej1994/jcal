@@ -99,14 +99,17 @@
 54
 55
 56
-57</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -121,12 +124,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4×</span>
-<span class="cline-any cline-yes">4×</span>
-<span class="cline-any cline-yes">4×</span>
-<span class="cline-any cline-yes">4×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4×</span>
 <span class="cline-any cline-yes">4×</span>
@@ -135,10 +132,32 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4×</span>
 <span class="cline-any cline-yes">4×</span>
 <span class="cline-any cline-yes">4×</span>
 <span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -155,6 +174,7 @@
 <span class="cline-any cline-yes">12×</span>
 <span class="cline-any cline-yes">12×</span>
 <span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use strict'
 &nbsp;
 /**
@@ -162,62 +182,72 @@
  * @module directions
  */
 &nbsp;
-/**
- * Callback used by apiCall
- * @callback apiCallback
- * @param {error} err - error returned (null if no error)
- * @param {data} route - the data returned as an object
- */
-&nbsp;
 const sync = require('sync-request')
 &nbsp;
 /**
- * returns the driving distance between two locations
- * @param {string} start - the starting location for the journey
- * @param {string} end - the ending location for the journey
- * @returns {null} no return value
+ * @function distance
+ * @description Returns the distance between start and end.
+ * @param {string} start - The starting location for the journey.
+ * @param {string} end - The ending location for the journey.
+ * @returns {number} - The distance from start to end.
  */
 exports.distance = (start, end) =&gt; new Promise((resolve, reject) =&gt; {
-		const data = apiCall(start, end, function(err, data) {
-			if(err) reject(err)
-			resolve(data.routes[0].legs[0].distance.value)
-		})
+	apiCall(start, end, function(err, data) {
+		if(err) reject(err)
+		resolve(data.routes[0].legs[0].distance.value)
+	})
 })
 &nbsp;
+/**
+ * @function duration
+ * @description Returns the duration of a journey between start and end.
+ * @param {string} start - The starting location for the journey.
+ * @param {string} end - The ending location for the journey.
+ * @returns {number} - The duration of a journey between start &amp; end.
+ */
 exports.duration = (start, end) =&gt; new Promise((resolve, reject) =&gt; {
-		const data = apiCall(start, end, function(err, data) {
-			if(err) reject(err)
-			resolve(data.routes[0].legs[0].duration.value)
-		})
+	apiCall(start, end, function(err, data) {
+		if(err) reject(err)
+		resolve(data.routes[0].legs[0].duration.value)
+	})
 })
 &nbsp;
+/**
+ * @function route
+ * @description Returns the directions of a journey between start and end.
+ * @param {string} start - The starting location for the journey.
+ * @param {string} end - The ending location for the journey.
+ * @returns {Array&lt;object&gt;} - The directions from start &amp; end.
+ */
 exports.route = (start, end) =&gt; new Promise((resolve, reject) =&gt; {
-		const data = apiCall(start, end, function(err, data) {
-			if(err) reject(err)
-			resolve(data.routes[0].legs[0].steps)
-		})
+	apiCall(start, end, function(err, data) {
+		if(err) reject(err)
+		resolve(data.routes[0].legs[0].steps)
+	})
 })
 &nbsp;
 /**
  * @function apiCall
  * @param {string} start - the starting location for the journey
  * @param {string} end - the ending location for the journey
- * @returns {null} no return value
+ * @param {apiCallback} callback - the callback run when api call is completed
+ * @returns {apiCallback} callback - callback containing error &amp; array of events
  */
 function apiCall(start, end, callback) {
-		let url = 'https://maps.googleapis.com/maps/api/directions/json?origin='
-		url = url+start+'&amp;destination='+end
-		const res = sync('GET', url)
-		const json = JSON.parse(res.getBody().toString('utf8'))
-		if(json.status === 'NOT_FOUND') return callback('Google Maps Error: '+json.status)
-		return callback(null, json)
-}</pre></td></tr>
+	let url = 'https://maps.googleapis.com/maps/api/directions/json?origin='
+	url = url+start+'&amp;destination='+end
+	const res = sync('GET', url)
+	const json = JSON.parse(res.getBody().toString('utf8'))
+	if(json.status === 'NOT_FOUND') return callback('Google Maps Error: '+json.status)
+	return callback(null, json)
+}
+&nbsp;</pre></td></tr>
 </table></pre>
 <div class='push'></div><!-- for sticky footer -->
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Dec 06 2016 21:17:54 GMT+0000 (GMT)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Dec 14 2016 14:00:19 GMT+0000 (GMT)
 </div>
 </div>
 <script src="../../prettify.js"></script>

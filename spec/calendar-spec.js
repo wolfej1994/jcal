@@ -16,7 +16,7 @@ describe('Calendar Appointments Model', function() {
 				body: {
 					userID: userDetails.username,
 					name: 'New Appointment',
-					date: new Date(2016, 11, 16, 0, 0, 0),
+					date: '2016-11-16 00:00',
 					address: 'The Lea, Westhorpe, Willoughby-on-the-Wolds',
 					towncity: 'Loughborough',
 					postcode: 'LE126TD'
@@ -24,8 +24,8 @@ describe('Calendar Appointments Model', function() {
 			}
 			calendar.createAppointment(request)
 			.then(response => {
-				expect(response.code).toBe(201)
-				expect(response.response.message).toBe('created new appointment')
+				expect(response.name).toBe('New Appointment')
+				expect(response.address).toBe('The Lea, Westhorpe, Willoughby-on-the-Wolds')
 				done()
 			})
 			.catch(err => {
@@ -56,9 +56,47 @@ describe('Calendar Appointments Model', function() {
 		})
 	})
 
+	describe('Create User Function', function() {
+
+		it('should create a new user for given data', function(done) {
+			const request = {body: {
+				username: 'NEWTESTUSER', password: 'NEWTESTPASS'}
+			}
+			calendar.createUser(request)
+			.then(response => {
+				expect(response.username).toBe('NEWTESTUSER')
+				expect(response.password).toBe('NEWTESTPASS')
+				done()
+			})
+			.catch(err => {
+				console.log(err)
+				expect(true).toBe(false)
+				done()
+			})
+		})
+	})
+
+		it('should throw an error due to username/password not being the correct data type', function(done) {
+			const request = { body: {
+				username: 12, password: 42
+				}
+			}
+			calendar.createUser(request)
+			.then(response => {
+				console.log(response)
+				expect(true).toBe(false)
+				done()
+			})
+			.catch(err => {
+				expect(err.code).toBe(400)
+				expect(err.response.message).toBe('username/password are not strings')
+				done()
+			})
+		})
+
 	describe('Create Appointments Function', function() {
 
-		it('Should create a new appointment for the given user', function(done){
+		it('should create a new appointment for the given user', function(done){
 			const request = {authorization: {
 				basic: {
 					username: userDetails.username,
@@ -68,7 +106,7 @@ describe('Calendar Appointments Model', function() {
 				body: {
 					userID: userDetails.username,
 					name: 'Newer Appointment',
-					date: new Date(2016, 1, 1, 0, 0, 0),
+					date: '2016-01-01 00:00',
 					address: '58 Far Gosford Street',
 					towncity: 'Coventry',
 					postcode: 'CV15DZ'
@@ -76,8 +114,8 @@ describe('Calendar Appointments Model', function() {
 			}
 			calendar.createAppointment(request)
 			.then(response => {
-				expect(response.code).toBe(201)
-				expect(response.response.message).toBe('created new appointment')
+				expect(response.name).toBe('Newer Appointment')
+				expect(response.address).toBe('58 Far Gosford Street')
 				done()
 			})
 			.catch(err => {
@@ -145,7 +183,7 @@ describe('Calendar Appointments Model', function() {
 				}
 			},
 				body: {
-					date: new Date(2016, 11, 16, 0, 0, 0)
+					date: '2016-11-16 00:00'
 				}
 			}
 			calendar.getAppointmentByDate(request)
@@ -176,7 +214,7 @@ describe('Calendar Appointments Model', function() {
 					userID: userDetails.username,
 					id: 'anID',
 					name: 'Newer Appointment',
-					date: new Date(2016, 1, 1, 0, 0, 0),
+					date: '2016-01-01 00:00',
 					address: '58 Far Gosford Street',
 					towncity: 'Coventry',
 					postcode: 'CV15DZ'
@@ -214,7 +252,7 @@ describe('Calendar Appointments Model', function() {
 					userID: userDetails.username,
 					id: 'anID',
 					name: 'Newer Appointment',
-					date: new Date(2016, 1, 1, 0, 0, 0),
+					date: '2016-01-01 00:00',
 					address: '58 Far Gosford Street',
 					towncity: 'Coventry',
 					postcode: 'CV15DZ'
@@ -251,7 +289,7 @@ describe('Calendar Appointments Model', function() {
 				body: {
 					userID: userDetails.username,
 					name: 'Newer Appointment',
-					date: new Date(2016, 12, 10, 0, 0, 0),
+					date: '2017-01-10 00:00',
 					address: '58 Far Gosford Street',
 					towncity: 'Coventry',
 					postcode: 'CV15DZ'
@@ -259,13 +297,14 @@ describe('Calendar Appointments Model', function() {
 			}
 			calendar.createAppointment(request)
 			.then(response => {
-				expect(response.code).toBe(201)
-				expect(response.response.message).toBe('created new appointment')
+				expect(response.name).toBe('Newer Appointment')
+				expect(response.address).toBe('58 Far Gosford Street')
 				return calendar.getAllAppointments(request)
 			})
 			.then(response => {
 				expect(response.length).toBe(2)
 				request.body.id = response[1].id
+				console.log('EVENT APPOINTMENT'+response[1].name)
 				return calendar.getEvents(request)
 			})
 			.then(eventsList => {
@@ -290,7 +329,7 @@ describe('Calendar Appointments Model', function() {
 					id: 'notAValidID',
 					userID: userDetails.username,
 					name: 'Newer Appointment',
-					date: new Date(2016, 11, 10, 18, 0, 0),
+					date: '2016-11-10 18:00',
 					address: '58 Far Gosford Street',
 					towncity: 'Coventry',
 					postcode: 'CV15DZ'
@@ -319,7 +358,7 @@ describe('Calendar Appointments Model', function() {
 				body: {
 					userID: userDetails.username,
 					name: 'Newest Appointment',
-					date: new Date(2016, 11, 10, 18, 0, 0),
+					date: '2016-11-10 18:00',
 					address: 'NotAValidAddress',
 					towncity: 'NotAValidTown',
 					postcode: 'NotAValidPostcode'
@@ -327,8 +366,8 @@ describe('Calendar Appointments Model', function() {
 			}
 			calendar.createAppointment(request)
 			.then(response => {
-				expect(response.code).toBe(201)
-				expect(response.response.message).toBe('created new appointment')
+				expect(response.name).toBe('Newest Appointment')
+				expect(response.address).toBe('NotAValidAddress')
 				return calendar.getAllAppointments(request)
 			})
 			.then(response => {
@@ -359,7 +398,7 @@ describe('Calendar Appointments Model', function() {
 				}
 			},
 				body: {
-					date: new Date(2016, 11, 16, 0, 0, 0)
+					date: '2016-11-16 00:00'
 				}
 			}
 			calendar.getAppointmentByDate(request)
@@ -393,7 +432,7 @@ describe('Calendar Appointments Model', function() {
 				}
 			},
 				body: {
-					date: new Date(2016, 11, 16, 0, 0, 0)
+					date: '2016-11-16 00:00'
 				}
 			}
 			calendar.getAppointmentByDate(request)
@@ -425,7 +464,7 @@ describe('Calendar Appointments Model', function() {
 				body: {
 					userID: userDetails.username,
 					name: 'Newest Appointment',
-					date: new Date(2016, 11, 10, 18, 0, 0),
+					date: '2016-11-10 18:00',
 					address: 'NotAValidAddress',
 					towncity: 'NotAValidTown',
 					postcode: 'NotAValidPostcode'
@@ -433,8 +472,8 @@ describe('Calendar Appointments Model', function() {
 			}
 			calendar.createAppointment(request)
 			.then(response => {
-				expect(response.code).toBe(201)
-				expect(response.response.message).toBe('created new appointment')
+				expect(response.name).toBe('Newest Appointment')
+				expect(response.address).toBe('NotAValidAddress')
 				return calendar.getAllAppointments(request)
 			})
 			.then(response => {
@@ -465,7 +504,7 @@ describe('Calendar Appointments Model', function() {
 				}
 			},
 				body: {
-					date: new Date(2016, 11, 16, 0, 0, 0)
+					date: '2016-11-16 00:00'
 				}
 			}
 			calendar.getAppointmentByDate(request)
@@ -480,7 +519,7 @@ describe('Calendar Appointments Model', function() {
 				done()
 			})
 			.catch(err => {
-				console.log('ERROR: '+err)
+				console.log(err)
 				expect(true).toBe(false)
 				done()
 			})
@@ -494,7 +533,7 @@ describe('Calendar Appointments Model', function() {
 				}
 			},
 				body: {
-					date: new Date(2016, 11, 16, 0, 0, 0)
+					date: '2016-11-16 00:00'
 				}
 			}
 			calendar.getAppointmentByDate(request)
@@ -526,7 +565,7 @@ describe('Calendar Appointments Model', function() {
 				body: {
 					userID: userDetails.username,
 					name: 'Newest Appointment',
-					date: new Date(2016, 11, 10, 18, 0, 0),
+					date: '2016-11-10 18:00',
 					address: 'NotAValidAddress',
 					towncity: 'NotAValidTown',
 					postcode: 'NotAValidPostcode'
@@ -534,8 +573,8 @@ describe('Calendar Appointments Model', function() {
 			}
 			calendar.createAppointment(request)
 			.then(response => {
-				expect(response.code).toBe(201)
-				expect(response.response.message).toBe('created new appointment')
+				expect(response.name).toBe('Newest Appointment')
+				expect(response.address).toBe('NotAValidAddress')
 				return calendar.getAllAppointments(request)
 			})
 			.then(response => {
@@ -566,7 +605,7 @@ describe('Calendar Appointments Model', function() {
 				}
 			},
 				body: {
-					date: new Date(2016, 11, 16, 0, 0, 0)
+					date: '2016-11-16 00:00'
 				}
 			}
 			calendar.getAppointmentByDate(request)
@@ -595,7 +634,7 @@ describe('Calendar Appointments Model', function() {
 				}
 			},
 				body: {
-					date: new Date(2016, 11, 16, 0, 0, 0)
+					date: '2016-11-16 00:00'
 				}
 			}
 			calendar.getAppointmentByDate(request)
@@ -627,7 +666,7 @@ describe('Calendar Appointments Model', function() {
 				body: {
 					userID: userDetails.username,
 					name: 'Newest Appointment',
-					date: new Date(2016, 11, 10, 18, 0, 0),
+					date: '2016-11-10 18:00',
 					address: 'NotAValidAddress',
 					towncity: 'NotAValidTown',
 					postcode: 'NotAValidPostcode'
@@ -635,8 +674,8 @@ describe('Calendar Appointments Model', function() {
 			}
 			calendar.createAppointment(request)
 			.then(response => {
-				expect(response.code).toBe(201)
-				expect(response.response.message).toBe('created new appointment')
+				expect(response.name).toBe('Newest Appointment')
+				expect(response.address).toBe('NotAValidAddress')
 				return calendar.getAllAppointments(request)
 			})
 			.then(response => {
@@ -654,6 +693,5 @@ describe('Calendar Appointments Model', function() {
 				done()
 			})
 		})
-
 	})
 })

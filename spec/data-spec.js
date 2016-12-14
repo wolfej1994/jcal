@@ -1,50 +1,47 @@
 'use strict'
 
 const calendar = require('../modules/data')
-const username = 'testUser'
+const username = 'jwolfe94'
 
 
 describe('Pesistant Data Model', function() {
 
 	beforeEach(function(done) {
 		let addAppointment = {
-			userID: username,
 			name: 'Easter Sunday',
-			date: new Date(2017, 3, 16, 12, 0, 0),
+			date: '2017-03-16 12:00',
 			address: 'Coventry University, Priory Street',
 			towncity: 'Coventry',
 			postcode: 'CV1 5FB'
 		}
-		calendar.addAppointment(addAppointment)
+		calendar.addAppointment(addAppointment, username)
 		.then(appointment => {
-			expect(appointment.code).toBe(201)
-			expect(appointment.response.message).toBe('created new appointment')
+			expect(appointment.name).toBe('Easter Sunday')
+			expect(appointment.address).toBe('Coventry University, Priory Street')
 		})
 		addAppointment = {
-			userID: username,
 			name: 'Bonfire Night',
-			date: new Date(2017, 10, 5, 18, 0, 0),
+			date: '2017-10-05 18:00',
 			address: 'The Red Lion Hunningham, Main Street, Hunningham',
 			towncity: 'Leamington Spa',
 			postcode: 'CV33 9DY'
 		}
-		calendar.addAppointment(addAppointment)
+		calendar.addAppointment(addAppointment, username)
 		.then(appointment => {
-			expect(appointment.code).toBe(201)
-			expect(appointment.response.message).toBe('created new appointment')
+			expect(appointment.name).toBe('Bonfire Night')
+			expect(appointment.address).toBe('The Red Lion Hunningham, Main Street, Hunningham')
 		})
 		addAppointment = {
-			userID: username,
 			name: 'Christmas Day',
-			date: new Date(2016, 11, 25, 11, 0, 0),
+			date: '2016-11-25 00:00',
 			address: 'West Thorpe, Willoughby',
 			towncity: 'Loughborough',
 			postcode: 'LE12 6TD'
 		}
-		calendar.addAppointment(addAppointment)
+		calendar.addAppointment(addAppointment, username)
 		.then(appointment => {
-			expect(appointment.code).toBe(201)
-			expect(appointment.response.message).toBe('created new appointment')
+			expect(appointment.name).toBe('Christmas Day')
+			expect(appointment.address).toBe('West Thorpe, Willoughby')
 			done()
 		})
 		.catch(err => {
@@ -74,15 +71,15 @@ describe('Pesistant Data Model', function() {
 			const addAppointment = {
 				userID: username,
 				name: 'New Years Day',
-				date: new Date(2017, 0, 1, 0, 0, 0),
+				date: '2017-01-01 00:00',
 				address: 'Far Gosford Street',
 				towncity: 'Coventry',
 				postcode: 'CV1 5DZ'
 			}
 			calendar.addAppointment(addAppointment)
 			.then(appointment => {
-				expect(appointment.code).toBe(201)
-				expect(appointment.response.message).toBe('created new appointment')
+				expect(appointment.name).toBe('New Years Day')
+				expect(appointment.address).toBe('Far Gosford Street')
 				done()
 			})
 			.catch(err => {
@@ -96,7 +93,7 @@ describe('Pesistant Data Model', function() {
 			const newAppointment = {
 				userID: username,
 				name: 42,
-				date: new Date(2017, 0, 1, 0, 0, 0),
+				date: '2017-1-1 00:00',
 				address: 'Far Gosford Street',
 				towncity: 'Coventry',
 				postcode: 'CV1 5DZ'
@@ -118,7 +115,7 @@ describe('Pesistant Data Model', function() {
 			const newAppointment = {
 				userID: username,
 				name: 'New Years Day',
-				date: 'not a date',
+				date: 42,
 				address: 'Far Gosford Street',
 				towncity: 'Coventry',
 				postcode: 'CV1 5DZ'
@@ -140,7 +137,7 @@ describe('Pesistant Data Model', function() {
 			const newAppointment = {
 				userID: username,
 				name: 'New Years Day',
-				date: new Date(2017, 0, 1, 0, 0, 0),
+				date: '2017-1-1 00:00',
 				address: 42,
 				towncity: 'Coventry',
 				postcode: 'CV1 5DZ'
@@ -162,7 +159,7 @@ describe('Pesistant Data Model', function() {
 			const newAppointment = {
 				userID: username,
 				name: 'New Years Day',
-				date: new Date(2017, 0, 1, 0, 0, 0),
+				date: '2017-1-1 00:00',
 				address: 'Far Gosford Street',
 				towncity: 42,
 				postcode: 'CV1 5DZ'
@@ -184,7 +181,7 @@ describe('Pesistant Data Model', function() {
 			const newAppointment = {
 				userID: username,
 				name: 'New Years Day',
-				date: new Date(2017, 0, 1, 0, 0, 0),
+				date: '2017-1-1 00:00',
 				address: 'Far Gosford Street',
 				towncity: 'Coventry',
 				postcode: 42
@@ -208,17 +205,16 @@ describe('Pesistant Data Model', function() {
 
 		it('should return an array for all appointments on the given date', function(done) {
 			const newAppointment = {
-				userID: username,
 				name: 'Another Bonfire Night',
-				date: new Date(2017, 10, 5, 19, 0, 0),
+				date: '2017-10-5 19:00',
 				address: 'Main Street, Hunningham',
 				towncity: 'Leamington Spa',
 				postcode: 'CV33 9DY'
 			}
-			calendar.addAppointment(newAppointment)
+			calendar.addAppointment(newAppointment, username)
 			.then(response => {
-				expect(response.code).toBe(201)
-				expect(response.response.message).toBe('created new appointment')
+				expect(response.name).toBe('Another Bonfire Night')
+				expect(response.address).toBe('Main Street, Hunningham')
 				return calendar.getAppointmentsByDate(newAppointment.date, username)
 			})
 			.then(appointments => {
@@ -235,7 +231,7 @@ describe('Pesistant Data Model', function() {
 		})
 
 		it('should throw an error if there are no appointments on the given date', function(done) {
-			const myBirthday = new Date(2016, 12, 9, 0, 0)
+			const myBirthday = '2016-12-9 00:00'
 			calendar.getAppointmentsByDate(myBirthday, username)
 			.then(appointments => {
 				console.log(appointments)
@@ -250,7 +246,7 @@ describe('Pesistant Data Model', function() {
 		})
 
 		it('should throw error trying to get item on date due to invalid date', function(done) {
-			calendar.getAppointmentsByDate('today', username)
+			calendar.getAppointmentsByDate(5, username)
 			.then(appointment => {
 				console.log(appointment)
 				expect(true).toBe(false)
@@ -311,7 +307,7 @@ describe('Pesistant Data Model', function() {
 			const updateAppointment = {
 				userID: username,
 				name: 'Bonfire Night',
-				date: new Date(2017, 10, 5, 18, 0, 0),
+				date: '2017-10-5 18:00',
 				address: 'The Ricoh Arena',
 				towncity: 'Coventry',
 				postcode: 'CV6 6GE'
@@ -341,7 +337,7 @@ describe('Pesistant Data Model', function() {
 				const updateAppointment = {
 					userID: username,
 					name: 42,
-					date: new Date(2017, 10, 5, 18, 0, 0),
+					date: '2017-10-5 18:00',
 					address: 'The Ricoh Arena',
 					towncity: 'Coventry',
 					postcode: 'CV6 6GE'
@@ -364,7 +360,7 @@ describe('Pesistant Data Model', function() {
 			const updateAppointment = {
 				userID: username,
 				name: 'New Appointment',
-				date: new Date(2017, 10, 5, 18, 0, 0),
+				date: '2017-10-5 18:00',
 				address: 'The Ricoh Arena',
 				towncity: 'Coventry',
 				postcode: 'CV6 6GE'

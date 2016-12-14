@@ -24,7 +24,7 @@ describe('Auth Module', function() {
 			})
             .catch(err => {
 				console.log(err)
-				expect(true).tobe(false)
+				expect(true).toBe(false)
 				done()
 			})
 		})
@@ -35,7 +35,7 @@ describe('Auth Module', function() {
 			}
 			auth.getHeaderCreds(request)
             .then(response => {
-                console.log(response)
+				console.log(response)
 				expect(true).toBe(false)
 				done()
 			})
@@ -76,7 +76,7 @@ describe('Auth Module', function() {
             }
             auth.hashPass(stored)
             .then(response => {
-                console.log(response)
+				expect(response.username).toBe('testUser')
                 return auth.checkPassword('password', response.password)
             })
             .then(matching => {
@@ -97,7 +97,7 @@ describe('Auth Module', function() {
             }
             auth.hashPass(stored)
             .then(response => {
-                console.log(response)
+				expect(response.username).toBe('testUser')
                 return auth.checkPassword('notThePassword', response.password)
             })
             .then(matching => {

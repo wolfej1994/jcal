@@ -40,7 +40,6 @@ describe('Events Module', function() {
 				done()
 			})
 			.catch(err => {
-				console.log(err)
 				expect(err).toBe('EventBrite Error: There are errors with your arguments: location.address - INVALID')
 				done()
 			})
